@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
+import os
 import sys
-from collections import defaultdict
 from collections import deque
 from datetime import datetime
 
 
 TIMEOUT = 10
-LOG_FILE = f"./flex_{datetime.timestamp(datetime.now())}.txt"
+DIRNAME = os.path.dirname(__file__)
+LOG_FILE = os.path.join(DIRNAME, f"flex_{datetime.timestamp(datetime.now())}.txt")
 
 
 def main():
@@ -19,11 +20,11 @@ def main():
     with open(LOG_FILE, "a") as f:
         for line in sys.stdin:
             fields = line.split("|", 7)
-            if len(fields) < 7:
+            if len(fields) < 7:  # probably some header
                 continue
 
             cc = fields[3]  # capcode
-            if fields[6] == "ALN":  # alphanumerics have an extra field
+            if fields[6] == "ALN":  # alphanumerics have an extra field before msg
                 temp = fields[-1].split("|")
                 fields = fields[:-1]
                 fields.extend(temp)
