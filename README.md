@@ -23,7 +23,7 @@ This project uses the following software stack:
 
 ## Methods
 
-To intercept and decode pages, open Gqrx and tune it to the chosen frequency. Then click "UDP" to stream the audio over UDP to a remote host.
+To intercept and decode pages, open Gqrx and tune it to the chosen frequency, adjusting the gain and squelch settings as needed. Then click "UDP" to stream the audio over UDP to a remote host.
 
 Listen to the UDP data (port 7355), resample the raw audio from 48 kHz to 22.05 kHz, then try to decode it using several protocols.
 ```
@@ -50,9 +50,10 @@ All frequencies were tested from Durham, N.C.
 
 ## Readings
 
+* Signal Identification Guide entries for [FLEX](https://www.sigidwiki.com/wiki/FLEX) and [POCSAG](https://www.sigidwiki.com/wiki/POCSAG), which can help you identify a frequency's protocol by its sound and waterfall.
 * "[Motorola FLEX / P2000 decoding](http://jelmerbruijn.nl/motorola-flex-p2000-decoding/)," by Jelmer Brujin (2014)
   * Overview of FLEX's implementation, and a project to decode pages in the Dutch P2000 paging network.
-* "[FLEX-TD Radio Paging System ARIB Standard](http://www.arib.or.jp/english/html/overview/doc/1-STD-43_A-E1.pdf)," by the Association of Radio Indistries and Businesses (1996)
+* "[FLEX-TD Radio Paging System ARIB Standard](http://www.arib.or.jp/english/html/overview/doc/1-STD-43_A-E1.pdf)," by the Association of Radio Industries and Businesses (1996)
   * Called the "gold standard for FLEX implementations" by Johnston.
 * "[Paging system design issues and overview of common paging protocols](https://user.eng.umd.edu/~leandros/papers/pagsys.pdf)," by Yianni Michalas and Leandros Tassiulas (1998)
 * "[Motorola FLEX protocol references](https://embeddedartistry.com/blog/2019/09/16/motorola-flex-protocol-references/)," by Phillip Johnston in Embedded Artistry (2019)
