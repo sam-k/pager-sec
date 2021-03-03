@@ -34,7 +34,7 @@ nc -lu 7355 \
 | multimon-ng -t raw -a POCSAG512 -a POCSAG1200 -a POCSAG2400 -a FLEX -
 ```
 
-<p align="center"><img width="650" src="https://i.imgur.com/WZ5fuqd.png"></p>
+<p align="center"><img width="650" src="https://i.imgur.com/iEzyeCq.png"></p>
 
 For each decoded FLEX message, multimon-ng prints a lot of associated metadata. I deciphered its syntax using the [ARIB Standard](http://www.arib.or.jp/english/html/overview/doc/1-STD-43_A-E1.pdf) for FLEX and the relevant [source code](https://github.com/EliasOenal/multimon-ng/blob/master/demod_flex.c). Here is a typical (but not real) message that you might see:
 
@@ -43,11 +43,13 @@ FLEX|3200/4|08.103.C|0004783821|LS|5|ALN|3.0.K|PT IN 413 DOE, JANE 37F AMS 204/6
 ```
 
 1. Protocol name: FLEX
-2. Mode: 3200 bits per second, 4-level FSK
+2. Transmission mode
+   * Speed (1600/3200/6400): 3200 bits per second
+   * FSK level (2/4): 4-level
 3. Frame information
    * Cycle number (0 to 14): 8
    * Frame number (0 to 127): 103
-   * Phase (A/B/C/D): C
+   * Phase (A for 1600 bps, A/C for 3200 bps, A/B/C/D for 6400 bps): C
 4. Capcode, left-padded with zeroes: 4783821
 5. Address type
    * Long/short (L/S): Long
@@ -70,7 +72,7 @@ nc -lu 7355 \
 | ./collect.py
 ```
 
-<p align="center"><img width="650" src="https://i.imgur.com/4D4Nuyw.png"></p>
+<p align="center"><img width="650" src="https://i.imgur.com/otHM4YC.png"></p>
 
 ## Frequencies
 
