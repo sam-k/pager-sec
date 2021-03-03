@@ -36,6 +36,15 @@ nc -lu 7355 \
 
 <p align="center"><img width="650" src="https://i.imgur.com/iEzyeCq.png"></p>
 
+From what I’ve observed, the messages seem to fall into one of several formats:
+1. For binary pages, a series of nine 8-digit hexadecimal numbers.
+2. For tone/numeric pages, a number or an extension to call.
+3. For alphanumeric pages,
+   * A short message that appears manually typed.
+   * A long message with a structured header (From/Subject fields), often followed by a confidentiality notice.
+   * An automated alert.
+   * A long series of base-64 characters, terminating in four (or fewer) A’s.
+
 For each decoded FLEX message, multimon-ng prints a lot of associated metadata. I deciphered its syntax using the [ARIB Standard](http://www.arib.or.jp/english/html/overview/doc/1-STD-43_A-E1.pdf) for FLEX and the relevant [source code](https://github.com/EliasOenal/multimon-ng/blob/master/demod_flex.c). Here is a typical (but not real) message that you might see:
 
 ```
