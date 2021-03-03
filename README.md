@@ -27,7 +27,7 @@ To intercept and decode pages, open Gqrx and tune it to the chosen frequency, ad
 
 <p align="center"><img width="400" src="https://i.imgur.com/YSquBIJ.png"></p>
 
-Listen to the UDP data (port 7355), resample the raw audio from 48 kHz to 22.05 kHz, then try to decode it using several common paging protocols. This command is adapted from that in the [Gqrx docs](https://gqrx.dk/doc/streaming-audio-over-udp). Protocols can be added or removed using the `-a` flag in `multimon-ng`. 
+Listen to the UDP data (port 7355), resample the raw audio from 48 kHz to 22.05 kHz, then try to decode it using several common paging protocols. This command is adapted from that in the [Gqrx docs](https://gqrx.dk/doc/streaming-audio-over-udp). Protocols can be added or removed using the `-a` flag in `multimon-ng`, and we can display the timestamp for each message with the `--timestamp` flag.
 ```
 nc -lu 7355 \
 | sox -t raw -esigned-integer -b16 -r 48000 - -esigned-integer -b16 -r 22050 -t raw - \
@@ -36,10 +36,10 @@ nc -lu 7355 \
 
 <p align="center"><img width="650" src="https://i.imgur.com/WZ5fuqd.png"></p>
 
-For each decoded FLEX message, multimon-ng prints a lot of associated metadata. I deciphered its syntax using the [ARIB Standard](http://www.arib.or.jp/english/html/overview/doc/1-STD-43_A-E1.pdf) for FLEX and the relevant [source code](https://github.com/EliasOenal/multimon-ng/blob/master/demod_flex.c). (Not real message.)
+For each decoded FLEX message, multimon-ng prints a lot of associated metadata. I deciphered its syntax using the [ARIB Standard](http://www.arib.or.jp/english/html/overview/doc/1-STD-43_A-E1.pdf) for FLEX and the relevant [source code](https://github.com/EliasOenal/multimon-ng/blob/master/demod_flex.c). Here is a typical (but not real) message that you might see:
 
 ```
-FLEX|3200/4|08.103.C|0004783821|LS|5|ALN|0.0.C|PT IN 413 DOE, JANE 37F AMS 204/66 TEMP 104 COVID POS LKN 1315
+FLEX|3200/4|08.103.C|0004783821|LS|5|ALN|3.0.K|PT IN 413 DOE, JANE 37F AMS 204/66 TEMP 104 COVID POS LKN 1315
 ```
 
 1. Protocol name: FLEX
@@ -55,9 +55,9 @@ FLEX|3200/4|08.103.C|0004783821|LS|5|ALN|0.0.C|PT IN 413 DOE, JANE 37F AMS 204/6
 6. Page enum (2 for tone, 3 for numeric, 5 for alphanumeric, 6 for binary): Alphanumeric
 7. Page type (TON for tone, NUM for numeric, ALN for alphanumeric, BIN for binary): Alphanumeric
 8. (Only for alphanumeric) Message fragment information
-   * Fragment indicator (3 for first fragment, 0,1,2,4,… for next fragments): Second fragment
+   * Fragment indicator (3 for first fragment, 0,1,2,4,… for next fragments): First fragment
    * Message continued flag (0 if end of message, 1 if more to follow): End of message
-   * Fragment flag (K if only 1 fragment, F if more to follow, C if last fragment): Last fragment of message
+   * Fragment flag (K if only 1 fragment, F if more to follow, C if last fragment): First and only fragment of message
 9. Message: Patient Jane Doe in Rm. 413, a 37-year-old female, has altered mental status. Her blood pressure is 204/66, her temperature is 104 °F, and she is COVID-positive. Her last known normal time was 1:15 p.m.
 
 Longer messages are often fragmented and transmitted over several pages. This is not an issue for practical use—each pager receives only those pages intended for it—but, because we see all pages on a frequency, these fragments can arrive interrupted by other messages. We can reassemble these fragments by concatenating all the pages meant for a capcode and received in a certain timeframe.
@@ -74,8 +74,8 @@ nc -lu 7355 \
 
 ## Frequencies
 
-All frequencies were tested from Durham, N.C.
-* 929.577 MHz: Hospital services in N.C. and S.C. (FLEX)
+All frequencies were tested from Durham, N.C., United States.
+* 929.577 MHz: Hospital services in North and South Carolina (FLEX)
 
 ## Readings
 
