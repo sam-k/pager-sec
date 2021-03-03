@@ -2,7 +2,7 @@
 
 ## Motivation
 
-Though largely replaced by smartphones today, pagers remain extremely common in niche fields, such as hospitals. Most pagers lack encryption/authentication and are vulnerable to attack. In this project, I use a software-defined radio (SDR) to intercept pages, parse the messages, and automate the task.
+Though largely replaced by smartphones today, pagers remain extremely common in niche fields, such as hospitals, whose communications often include protected health information. Yet most pagers lack encryption/authentication and are vulnerable to attack. In this project, I use a software-defined radio (SDR) to intercept pages, parse the messages, and automate the task.
 
 ## Materials
 
@@ -25,15 +25,18 @@ This project uses the following software stack:
 
 To intercept and decode pages, open Gqrx and tune it to the chosen frequency, adjusting the gain and squelch settings as needed. Then click "UDP" to stream the audio over UDP to a remote host.
 
-Listen to the UDP data (port 7355), resample the raw audio from 48 kHz to 22.05 kHz, then try to decode it using several protocols.
+<p align="center"><img width="400" src="https://i.imgur.com/YSquBIJ.png"></p>
+
+Listen to the UDP data (port 7355), resample the raw audio from 48 kHz to 22.05 kHz, then try to decode it using several protocols. This command is adapted from that in the [Gqrx docs](https://gqrx.dk/doc/streaming-audio-over-udp). Protocols can be added or removed using the `-a` flag in `multimon-ng`. 
 ```
 nc -lu 7355 \
 | sox -t raw -esigned-integer -b16 -r 48000 - -esigned-integer -b16 -r 22050 -t raw - \
 | multimon-ng -t raw -a POCSAG512 -a POCSAG1200 -a POCSAG2400 -a FLEX -
 ```
-The command is from the [Gqrx docs](https://gqrx.dk/doc/streaming-audio-over-udp). Protocols can be added or removed using the `-a` flag in `multimon-ng`. 
 
-Longer messages are often fragmented and sent over several pages. This is not an issue for practical use—each pager receives only those pages intended for it—but, because we see all pages on a frequency, these fragments can arrive interrupted by other messages. We can reassemble these fragments by concatenating all the pages meant for a capcode and received in a certain timeframe.
+<p align="center"><img width="650" src="https://i.imgur.com/WZ5fuqd.png"></p>
+
+Longer messages are often fragmented and transmitted over several pages. This is not an issue for practical use—each pager receives only those pages intended for it—but, because we see all pages on a frequency, these fragments can arrive interrupted by other messages. We can reassemble these fragments by concatenating all the pages meant for a capcode and received in a certain timeframe.
 
 Redirect the output to [collect.py](collect.py) to reassemble the message fragments in real time.
 ```
@@ -43,6 +46,8 @@ nc -lu 7355 \
 | ./collect.py
 ```
 
+<p align="center"><img width="650" src="https://i.imgur.com/4D4Nuyw.png"></p>
+
 ## Frequencies
 
 All frequencies were tested from Durham, N.C.
@@ -50,11 +55,11 @@ All frequencies were tested from Durham, N.C.
 
 ## Readings
 
-* Signal Identification Guide entries for [FLEX](https://www.sigidwiki.com/wiki/FLEX) and [POCSAG](https://www.sigidwiki.com/wiki/POCSAG), which can help you identify a frequency's protocol by its sound and waterfall.
-* "[Motorola FLEX / P2000 decoding](http://jelmerbruijn.nl/motorola-flex-p2000-decoding/)," by Jelmer Brujin (2014)
-  * Overview of FLEX's implementation, and a project to decode pages in the Dutch P2000 paging network.
-* "[FLEX-TD Radio Paging System ARIB Standard](http://www.arib.or.jp/english/html/overview/doc/1-STD-43_A-E1.pdf)," by the Association of Radio Industries and Businesses (1996)
-  * Called the "gold standard for FLEX implementations" by Johnston.
-* "[Paging system design issues and overview of common paging protocols](https://user.eng.umd.edu/~leandros/papers/pagsys.pdf)," by Yianni Michalas and Leandros Tassiulas (1998)
-* "[Motorola FLEX protocol references](https://embeddedartistry.com/blog/2019/09/16/motorola-flex-protocol-references/)," by Phillip Johnston in Embedded Artistry (2019)
+* Signal Identification Guide entries for [FLEX](https://www.sigidwiki.com/wiki/FLEX) and [POCSAG](https://www.sigidwiki.com/wiki/POCSAG), which can help you identify a frequency’s protocol by its sound and waterfall.
+* “[Motorola FLEX / P2000 decoding](http://jelmerbruijn.nl/motorola-flex-p2000-decoding/),” by Jelmer Brujin (2014)
+  * Overview of FLEX’s implementation, and a project to decode pages in the Dutch P2000 paging network.
+* “[FLEX-TD Radio Paging System ARIB Standard](http://www.arib.or.jp/english/html/overview/doc/1-STD-43_A-E1.pdf),” by the Association of Radio Industries and Businesses (1996)
+  * Called the “gold standard for FLEX implementations” by Johnston.
+* “[Paging system design issues and overview of common paging protocols](https://user.eng.umd.edu/~leandros/papers/pagsys.pdf),” by Yianni Michalas and Leandros Tassiulas (1998)
+* “[Motorola FLEX protocol references](https://embeddedartistry.com/blog/2019/09/16/motorola-flex-protocol-references/),” by Phillip Johnston in Embedded Artistry (2019)
   * A collection of additional resources about FLEX.
