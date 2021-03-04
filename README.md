@@ -13,11 +13,11 @@ This project uses the following hardware:
 * [**Raspberry Pi**](https://www.raspberrypi.org/) 3 Model B with 1 GB RAM, to automate the task. This and other RPi models are available online.
 
 This project uses the following software stack:
-* [**Gqrx**](https://gqrx.dk/), an open-source SDR receiver on Linux.
+* [**Gqrx**](https://gqrx.dk/) 2.14.4, an open-source SDR receiver on Linux.
   * [Dependencies](https://ports.macports.org/port/gqrx/summary): gnuradio, gr-osmosdr, portaudio, qt5-qtbase, qt5-qtsvg, volk (and their dependencies)
-* [**SoX**](http://sox.sourceforge.net/), a cross-platform tool for audio processing.
+* [**SoX**](http://sox.sourceforge.net/) 14.4.2, a cross-platform tool for audio processing.
   * [Dependencies](https://ports.macports.org/port/sox/summary): flac, lame, libiconv, libid3tag, libmad, libmagic, libogg, libopus, libpng, libsndfile, libvorbis, opusfile, twolame, wavpack, zlib (and their dependencies)
-* [**multimon-ng**](https://github.com/EliasOenal/multimon-ng), a digital decoder on Linux.
+* [**multimon-ng**](https://github.com/EliasOenal/multimon-ng) 1.1.8, a digital decoder on Linux.
   * It is one of the few decoders that support FLEX and POCSAG, two common paging protocols.
 * I am running [macOS Big Sur 11.1](https://developer.apple.com/documentation/macos-release-notes/macos-big-sur-11_1-release-notes) on my machine, and [Raspbian Buster](https://www.raspberrypi.org/blog/buster-the-new-version-of-raspbian/) on the RPi. All Linux software were installed on macOS through [MacPorts](https://www.macports.org/).
 
