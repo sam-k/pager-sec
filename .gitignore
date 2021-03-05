@@ -1,2 +1,6 @@
-*.DS_STORE
+output/
 *.txt
+*.csv
+*.wav
+
+*.DS_STORE
