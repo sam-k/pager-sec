@@ -48,7 +48,7 @@ From what I’ve observed, the messages seem to fall into one of several formats
 For each decoded FLEX message, multimon-ng prints a lot of associated metadata. I deciphered its syntax using the [ARIB Standard](http://www.arib.or.jp/english/html/overview/doc/1-STD-43_A-E1.pdf) for FLEX and the relevant [source code](https://github.com/EliasOenal/multimon-ng/blob/master/demod_flex.c). Here is a typical (but not real) message that you might see:
 
 ```
-FLEX|3200/4|08.103.C|0004783821|LS|5|ALN|3.0.K|PT IN 413 DOE, JANE 37F AMS 204/66 TEMP 104 COVID POS LKN 1315
+FLEX|3200/4|08.103.C|0004783821|LS|5|ALN|3.0.K|PT IN 413 DOE, JANE 37F AMS 85%RA 61 20 204/66 104 LKN 1315
 ```
 
 1. Protocol name: FLEX
@@ -69,7 +69,7 @@ FLEX|3200/4|08.103.C|0004783821|LS|5|ALN|3.0.K|PT IN 413 DOE, JANE 37F AMS 204/6
    * Fragment indicator (3 for first fragment, 0,1,2,4,… for next fragments): First fragment
    * Message continued flag (0 if end of message, 1 if more to follow): End of message
    * Fragment flag (K if only 1 fragment, F if more to follow, C if last fragment): First and only fragment of message
-9. Message: Patient Jane Doe in Rm. 413, a 37-year-old female, has altered mental status. Her blood pressure is 204/66, her temperature is 104 °F, and she is COVID-positive. Her last known normal time was 1:15 p.m.
+9. Message: Patient Jane Doe in Rm. 413, a 37-year-old female, has altered mental status. Her blood oxygen saturation is 85% of room air, her pulse is 61 beats per minute, her respiratory rate is 20 breaths per minute, her blood pressure is 204/66, and her temperature is 104 °F. Her last known normal time was 1:15 p.m.
 
 Longer messages are often fragmented and transmitted over several pages. This is not an issue for practical use—each pager receives only those pages intended for it—but, because we see all pages on a frequency, these fragments can arrive interrupted by other messages. We can reassemble these fragments by concatenating all the pages meant for a capcode and received in a certain timeframe.
 
