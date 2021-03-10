@@ -2,5 +2,6 @@ output/
 *.txt
 *.csv
 *.wav
+*.zip
 
 *.DS_STORE
