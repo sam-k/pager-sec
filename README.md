@@ -1,8 +1,14 @@
 # pager-sdr
 
+:construction: Pending review, the interception and decoding steps of this project have been **paused**.
+
 ## Motivation
 
-Though largely replaced by smartphones today, pagers remain extremely common in niche fields, such as hospitals, whose communications often include protected health information. Yet most pagers lack encryption/authentication and are vulnerable to attack. In this project, I use a software-defined radio (SDR) to intercept pages, parse the messages, and automate the task.
+Though largely replaced by smartphones today, pagers remain extremely common in niche fields, such as hospitals, where pagers are favored for their low cost, long battery life, wide range and reliable connectivity—crucial in a setting where many walls are shielded to block X-ray radiation. An estimated [80% of all U.S. clinicians](https://www.journalofhospitalmedicine.com/jhospmed/article/141692/hospital-medicine/hospital-based-clinicians-use-technology-patient-care) still carry pagers, not to mention the nurses, paramedics and other health-care personnel who also rely on pagers.
+
+However, most pagers have zero security. The one-way pagers cannot support end-to-end encryption, and most data is transmitted unencrypted, yet paging communications often include protected health information (PHI)—including patient names, medical histories and test results, all in real time. This poses significant risk to patient confidentiality and may violate the [HIPAA Security Rule](https://www.law.cornell.edu/cfr/text/45/164.306). Still, it remains common practice in many hospitals.
+
+In this project, I demonstrate the security issues in medical pagers by using a software-defined radio (SDR) to intercept pages, parse the messages, and automate the task. I also provide security recommendations to remedy these issues.
 
 ## Materials
 
@@ -22,6 +28,8 @@ This project uses the following software stack:
 * I am running [macOS Big Sur 11.1](https://developer.apple.com/documentation/macos-release-notes/macos-big-sur-11_1-release-notes) on my machine, and [Raspbian Buster](https://www.raspberrypi.org/blog/buster-the-new-version-of-raspbian/) on the RPi. All Linux software were installed on macOS through [MacPorts](https://www.macports.org/).
 
 ## Methods
+
+### Interception
 
 To intercept and decode pages, open Gqrx and tune it to the chosen frequency, adjusting the gain and squelch settings as needed. Then click "UDP" to stream the audio over UDP to a remote host.
 
@@ -70,6 +78,12 @@ FLEX|3200/4|08.103.C|0004783821|LS|5|ALN|3.0.K|PT IN 413 DOE, JANE 37F AMS 85%RA
    * Message continued flag (0 if end of message, 1 if more to follow): End of message
    * Fragment flag (K if only 1 fragment, F if more to follow, C if last fragment): First and only fragment of message
 9. Message: Patient Jane Doe in Rm. 413, a 37-year-old female, has altered mental status. Her blood oxygen saturation is 85% of room air, her pulse is 61 beats per minute, her respiratory rate is 20 breaths per minute, her blood pressure is 204/66, and her temperature is 104 °F. Her last known normal time was 1:15 p.m.
+
+### Alternative: Generating Data
+
+If you wish not to intercept real pages, you can also auto-generate artificial data. The script [generate.py](generate.py) follows the multimon-ng output format above to generate fake pages.
+
+### Processing
 
 Longer messages are often fragmented and transmitted over several pages. This is not an issue for practical use—each pager receives only those pages intended for it—but, because we see all pages on a frequency, these fragments can arrive interrupted by other messages. We can reassemble these fragments by concatenating all the pages meant for a capcode and received in a certain timeframe.
 
