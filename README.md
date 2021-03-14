@@ -100,7 +100,9 @@ nc -lu 7355 \
 ## Frequencies
 
 All frequencies were tested from Durham, N.C., United States.
+* 929.142 MHz: ??? (FLEX)
 * 929.577 MHz: Hospital services in North and South Carolina (FLEX)
+* 931.161 MHz: ??? (FLEX)
 
 ## Readings
 
