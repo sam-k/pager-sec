@@ -1,6 +1,6 @@
 # pager-sdr
 
-:construction: Pending review, the interception and decoding steps of this project have been **paused**.
+:construction: Per guidance from Duke University’s [Office of Counsel](https://ogc.duke.edu/), the interception and decoding steps of this project have been **suspended**.
 
 ## Motivation
 
@@ -100,6 +100,8 @@ nc -lu 7355 \
 ## Frequencies
 
 All frequencies were tested from Durham, N.C., United States.
+
+Only 929.577 MHz could be positively identified, as the interception and decoding of pages were suspended afterward. The other frequencies are only suspected to follow FLEX protocol, based on their sound and waterfalls.
 * 929.142 MHz: ??? (FLEX)
 * 929.577 MHz: Hospital services in North and South Carolina (FLEX)
 * 931.161 MHz: ??? (FLEX)
