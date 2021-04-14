@@ -4,4 +4,6 @@ output/
 *.wav
 *.zip
 
+*.mov
+
 *.DS_STORE
