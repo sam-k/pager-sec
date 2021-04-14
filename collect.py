@@ -18,6 +18,15 @@ CSV_FILE = os.path.join(DIRNAME, f"output/out_{TIMESTAMP}.csv")
 
 
 def split_line(line: str):
+    """
+    Splits a multimon-ng output line into its fields.
+
+    Args:
+        line: Output line from multimon-ng
+    Returns:
+        Array of fields
+    """
+
     fields = line.split("|", 7)
     if len(fields) < 7:  # probably some header
         return None
@@ -31,6 +40,16 @@ def split_line(line: str):
 
 
 def print_log(f, metadata: list, msg: str, msg_id: int):
+    """
+    Prints a compiled message.
+
+    Args:
+        f: File descriptor
+        metadata: Metadata fields of an output line
+        msg: Compiled message
+        msg_id: Unique ID for message
+    """
+
     if HASH_OUTPUT:
         msg = sha256(msg.encode("utf-8")).hexdigest()
     for md in metadata:
@@ -39,6 +58,16 @@ def print_log(f, metadata: list, msg: str, msg_id: int):
 
 
 def print_csv(w, metadata: list, msg: str, msg_id: int):
+    """
+    Writes a compiled message into a CSV file.
+
+    Args:
+        w: CSV writer
+        metadata: Metadata fields of an output line
+        msg: Compiled message
+        msg_id: Unique ID for message
+    """
+
     if HASH_OUTPUT:
         msg = sha256(msg.encode("utf-8")).hexdigest()
     for md in metadata:
@@ -63,6 +92,10 @@ def print_csv(w, metadata: list, msg: str, msg_id: int):
 
 
 def main():
+    """
+    Main.
+    """
+
     # OrderedDict of {capcode : [[metadata], msg, msg_hash]}
     cc_dict = OrderedDict()
     # Message ID

@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
-from collections import deque
 import random
 import string
 import time
+from collections import deque
+
 
 # Weighted dict of page header choices.
 PARAMS = {
@@ -32,6 +33,13 @@ MSG_SPACE = {
 
 
 def generate_header_comps():
+    """
+    Randomly generates components of a message header, in style of multimon-ng output.
+
+    Returns:
+        Dict of header fields
+    """
+
     protocol = random.choices(PARAMS["protocol"][0], PARAMS["protocol"][1], k=1)[0]
     transmit = random.choices(PARAMS["transmit"][0], PARAMS["transmit"][1], k=1)[0]
     frame_phase = random.choices(
@@ -57,6 +65,18 @@ def generate_header_comps():
 
 
 def build_header(header_comps, cycle_num, frame_num, frag_info=None):
+    """
+    Builds header from components.
+
+    Args:
+        header_comps: Dict of header components
+        cycle_num: Cycle number
+        frame_num: Frame number
+        frag_info: Fragment info for multi-part ALN messages
+    Returns:
+        Header string
+    """
+
     cycle_str = str(cycle_num).zfill(2)
     frame_str = str(frame_num).zfill(3)
     header = f'{header_comps["protocol"]}|{header_comps["transmit"]}|{cycle_str}.{frame_str}.{header_comps["frame_phase"]}|{header_comps["capcode"]}|{header_comps["addr_type"]}|{header_comps["page_enum"]}|{header_comps["page_type"]}'
@@ -66,6 +86,17 @@ def build_header(header_comps, cycle_num, frame_num, frag_info=None):
 
 
 def generate_msg(page_type, length=None, range=(1, 100)):
+    """
+    Randomly generates a message.
+
+    Args:
+        page_type: Page type (TON, NUM, ALN, BIN)
+        length: Message length, random if unspecified
+        range: Range for length, 1-100 if unspecified
+    Returns:
+        Generated message
+    """
+
     return "".join(
         random.choices(
             MSG_SPACE[page_type],
@@ -75,6 +106,10 @@ def generate_msg(page_type, length=None, range=(1, 100)):
 
 
 def main():
+    """
+    Main.
+    """
+
     # Initialize params.
     cycle_num = random.randint(0, 14)
     frame_num = random.randint(0, 127)

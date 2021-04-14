@@ -7,6 +7,17 @@ from Crypto.Random import get_random_bytes
 
 
 def encrypt(key, plaintext, authdata):
+    """
+    Encrypts a message using ChaCha20-Poly1305.
+
+    Args:
+        key: 256-bit shared key
+        plaintext: Plaintext to be encrypted, up to 300 chars
+        authdata: Additional data for authentication
+    Returns:
+        Dict of ciphertext and associated encryption info
+    """
+
     cipher = ChaCha20_Poly1305.new(key=key)
     cipher.update(authdata)
     ciphertext, tag = cipher.encrypt_and_digest(plaintext)
@@ -20,6 +31,19 @@ def encrypt(key, plaintext, authdata):
 
 
 def decrypt(key, ciphertext, authdata, iv, tag):
+    """
+    Decrypts a message using ChaCha20-Poly1305.
+
+    Args:
+        key: 256-bit shared key
+        ciphertext: Ciphertext to be decrypted
+        authdata: Additional data for authentication
+        iv: 96-bit initialization vector (nonce)
+        tag: 128-bit authentication tag
+    Returns:
+        Plaintext if decryption succeeded, else None
+    """
+
     k = ("ciphertext", "auth", "iv", "tag")
     v = (b16decode(x) for x in (ciphertext, authdata, iv, tag))
     result = dict(zip(k, v))
@@ -35,6 +59,15 @@ def decrypt(key, ciphertext, authdata, iv, tag):
 
 
 def b16arduino(s):
+    """
+    Converts a base16 string into Arduino-style byte array.
+
+    Args:
+        s: Base16 string
+    Returns:
+        String as Arduino-style byte array
+    """
+
     if len(s) % 2 != 0:
         print("Invalid base-16")
         return None
@@ -44,6 +77,11 @@ def b16arduino(s):
 
 
 def main():
+    """
+    Main.
+    """
+
+    # Pager-specific pre-shared key
     # key = get_random_bytes(32)
     key = b16decode(b"12C000EF88068E0777118C20DEEB2702F22A06042E3534DBCD9CE1EAC9175DE9")
     plaintext = (
