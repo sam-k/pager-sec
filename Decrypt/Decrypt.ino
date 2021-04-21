@@ -2,7 +2,11 @@
 
 // Adapted from https://platformio.org/lib/show/1168/Crypto
 
+// Max sizes in bytes
 #define MAX_PLAINTEXT_LEN 300
+#define MAX_AUTHDATA_LEN 32
+#define MAX_IV_LEN 16
+#define MAX_TAG_LEN 16
 
 // Pager-specific pre-shared key
 const uint8_t KEY[32]  = {0x12, 0xC0, 0x00, 0xEF, 0x88, 0x06, 0x8E, 0x07,
@@ -13,54 +17,46 @@ const uint8_t KEY[32]  = {0x12, 0xC0, 0x00, 0xEF, 0x88, 0x06, 0x8E, 0x07,
 // Struct for encryption info
 struct MsgVector {
   uint8_t ciphertext[MAX_PLAINTEXT_LEN];
-  uint8_t authdata[16];
-  uint8_t iv[16];
-  uint8_t tag[16];
+  uint8_t authdata[MAX_AUTHDATA_LEN];
+  uint8_t iv[MAX_IV_LEN];
+  uint8_t tag[MAX_TAG_LEN];
   size_t datasize;
   size_t authsize;
   size_t ivsize;
   size_t tagsize;
 };
 
-// Incoming encrypted msg, from encrypt.py
-static MsgVector const encryptedMsg PROGMEM = {
-  .ciphertext  = {0x0E, 0xE7, 0x64, 0x21, 0x90, 0x49, 0x04, 0x07, 0xB8, 0x21, 0x48, 0x9B, 0x34, 0x38, 0x86, 0x06, 0x9D, 0x51, 0xA6, 0xD0, 0xCF, 0x90, 0x0A, 0x66, 0x5D, 0x32, 0xF8, 0x4F, 0x44, 0xAD, 0xF0, 0x96, 0x16, 0xA9, 0xE3, 0x98, 0xA7, 0x62, 0x4A, 0x71, 0x03, 0xD9, 0xBE, 0x3D, 0x2F, 0x12, 0xD4, 0xCA, 0x13, 0xC6, 0x76, 0xE7, 0xAA, 0xC0, 0xF5, 0x01, 0xC9, 0x5F, 0x40, 0x10, 0x54, 0x14, 0x6B, 0x4C, 0x15, 0xA6, 0xE9, 0x9C, 0x4F, 0xCE, 0xA8, 0x90, 0x6E, 0xEC, 0x0E, 0x8F, 0xEB},
-  .authdata    = {},
-  .iv          = {0xF8, 0x63, 0x0F, 0xAA, 0xA6, 0x3D, 0xBD, 0x61, 0x21, 0xEC, 0x9B, 0xA3},
-  .tag         = {0x2E, 0xF3, 0x88, 0x0B, 0xA6, 0x6C, 0x5D, 0x85, 0x82, 0xA1, 0x4C, 0x5C, 0x64, 0x0A, 0xF5, 0x62},
-  .datasize    = 77,
-  .authsize    = 0,
-  .ivsize      = 12,
-  .tagsize     = 16
-};
-
+// ChaCha20-Poly1305 cipher
 ChaChaPoly chachapoly;
 
+// Incoming encrypted msg
 MsgVector msgVector;
+
+// Generic buffer
 byte buffer[MAX_PLAINTEXT_LEN];
 
-bool decrypt(ChaChaPoly *cipher, const struct MsgVector *msg) {
+bool decrypt(ChaChaPoly *cipher, MsgVector *msg) {
   /*
-   * Decrypt a ChaChaPoly message.
+   * Decrypts a ChaChaPoly message.
    * 
    * Args:
    *   cipher: ChaChaPoly cipher
    *   msg: MsgVector of encrypted msg and associated info
    * Returns:
-   *   Did decryption  succeed?
+   *   Was decryption successful?
    */
- 
+
   size_t posn;
   memset(buffer, 0x00, sizeof(buffer));
 
   // Initialize cipher
   cipher->clear();
   if (!cipher->setKey(KEY, 32)) {
-    Serial.println("setKey Failed");
+    Serial.println("Failed to set key");
     return false;
   }
   if (!cipher->setIV(msg->iv, msg->ivsize)) {
-    Serial.println("setIV Failed");
+    Serial.println("Failed to set IV");
     return false;
   }
 
@@ -75,51 +71,188 @@ bool decrypt(ChaChaPoly *cipher, const struct MsgVector *msg) {
     }
     Serial.println();
   } else {
-    Serial.println("checkTag Failed");
+    Serial.println("Failed to authenticate tag");
     return false;
   }
 
   return true;
 }
 
-void decryptCipher(ChaChaPoly *cipher, const struct MsgVector *msg) {
+bool readMsgVectorInput(uint8_t *buf, size_t *bufSize, int len) {
   /*
-   * Wrapper for decrypt.
+   * Reads input for a msgVector field.
    * 
    * Args:
-   *   cipher: ChaChaPoly cipher
-   *   msg: MsgVector of encrypted msg and associated info
+   *   buf: Input buffer to write into
+   *   bufSize: Address of input buffer size to write into
+   *   len: Max number of bytes to read
+   * Returns:
+   *   Was reading input successful?
    */
- 
-  // Fetch from PROGMEM
-  memcpy_P(&msgVector, msg, sizeof(MsgVector));
-  msg = &msgVector;
 
-  if (decrypt(cipher, msg)) {
-    Serial.println("Decryption succeeded");
-  } else {
-    Serial.println("Decryption failed");
+  while (!Serial.available()); // block
+
+  int inputSize = readSerialHexUntil('\n', buf, len);
+  if (inputSize < 0) {
+    Serial.println("Invalid input\n");
+    return false;
   }
+  *bufSize = inputSize;
+  printBuffer(buf, inputSize, 0);
+  return true;
+}
+
+int readSerialHexUntil(char term, uint8_t *buf, int len) {
+  /*
+   * Reads a hex string into buffer from Serial.
+   * 
+   * Args:
+   *   delim: Terminating character of hex string
+   *   buf: Buffer to read into
+   *   len: Max number of bytes to read
+   * Returns:
+   *   Number of bytes read, or -1 if invalid input
+   */
+
+  int i;
+
+  for (i = 0; i < len; i++) {
+    int b, h;
+    unsigned long hex;
+
+    // 1st hex digit of byte
+    while (!Serial.available()); // block
+    b = Serial.read();
+    if (b < 0 || b == (int)term) { break; }
+    // Invalid 1st digit; destroy rest of input
+    if ((h = htoi(b)) < 0) {
+      while (b != (int)term) {
+        b = Serial.read();
+      }
+      i = -1;
+      break;
+    }
+    hex = h * 16L;
+
+    // 2nd hex digit of byte
+    while (!Serial.available()); // block
+    b = Serial.read();
+    // Invalid byte or invalid 2nd digit; destroy rest of input
+    if (b < 0 || b == (int)term || (h = htoi(b)) < 0) {
+      while (b >= 0 && b != (int)term) {
+        b = Serial.read();
+      }
+      i = -1;
+      break;
+    }
+    hex += h;
+
+    buf[i] = hex;
+  }
+
+  destroySerialBuffer();
+  return i;
+}
+
+void printBuffer(uint8_t *buf, int len, char delim) {
+  /*
+   * Prints buffer as hex.
+   * 
+   * Args:
+   *   buf: Buffer to print
+   *   len: Number of bytes to print
+   *   delim: Delimiter between bytes
+   */
+
+  for (int i = 0; i < len; i++) {
+    if (buf[i] < 0x10) {
+      Serial.print('0');
+    }
+    Serial.print(buf[i], HEX);
+    if (delim && i < len - 1) {
+      Serial.print(delim);
+    }
+  }
+  Serial.println();
+}
+
+void destroySerialBuffer() {
+  /*
+   * Destroys rest of input buffer.
+   */
+
+  while (Serial.available()) {
+    Serial.read();
+  }
+}
+
+int htoi(int ch) {
+  /*
+   * For a hex digit, converts ASCII representation to (decimal) int.
+   * e.g., htoi('A') == 11
+   * 
+   * Args:
+   *   ch: Hex digit as ASCII
+   * Returns:
+   *   Hex digit as int, or -1 if invalid hex
+   */
+
+  if (ch >= '0' && ch <= '9') {
+    return ch - '0';
+  }
+  if (ch >= 'A' && ch <= 'F') {
+    return ch - 'A' + 10;
+  }
+  if (ch >= 'a' && ch <= 'f') {
+    return ch - 'a' + 10;
+  }
+  return -1;
 }
 
 void setup() {
   /*
-   * Set up sketch.
+   * Sets up sketch.
    */
- 
-  // Set up serial connection
+
   Serial.begin(9600);
-
-  Serial.println("Incoming Encrypted Message");
-
-  // Decrypt msg
-  decryptCipher(&chachapoly, &encryptedMsg);
-  Serial.println();
+  Serial.println("Starting pager...\n");
 }
 
 void loop() {
   /*
-   * Loop sketch.
+   * Loops sketch.
    */
- }
- 
+
+  Serial.println(">>> Incoming encrypted message...");
+
+  // Input: encrypted message
+  Serial.print("Enter msg: ");
+  if (!readMsgVectorInput(msgVector.ciphertext, &msgVector.datasize, MAX_PLAINTEXT_LEN)) {
+    return;
+  }
+
+  // Input: additional data
+  Serial.print("Enter AD: ");
+  if (!readMsgVectorInput(msgVector.authdata, &msgVector.authsize, MAX_AUTHDATA_LEN)) {
+    return;
+  }
+
+  // Input: initialization vector
+  Serial.print("Enter IV: ");
+  if (!readMsgVectorInput(msgVector.iv, &msgVector.ivsize, MAX_IV_LEN)) {
+    return;
+  }
+
+  // Input: tag
+  Serial.print("Enter tag: ");
+  if (!readMsgVectorInput(msgVector.tag, &msgVector.tagsize, MAX_TAG_LEN)) {
+    return;
+  }
+
+  // Decrypt message
+  Serial.println("<<< Decrypting message...");
+  decrypt(&chachapoly, &msgVector);
+
+  Serial.println();
+  destroySerialBuffer();
+}
