@@ -58,24 +58,6 @@ def decrypt(key, ciphertext, authdata, iv, tag):
         return None
 
 
-def b16arduino(s):
-    """
-    Converts a base16 string into Arduino-style byte array.
-
-    Args:
-        s: Base16 string
-    Returns:
-        String as Arduino-style byte array
-    """
-
-    if len(s) % 2 != 0:
-        print("Invalid base-16")
-        return None
-
-    b16arr = [f"0x{s[i:i+2]}" for i in range(0, len(s), 2)]
-    return f"{{{', '.join(b16arr)}}}"
-
-
 def main():
     """
     Main.
@@ -84,10 +66,8 @@ def main():
     # Pager-specific pre-shared key
     # key = get_random_bytes(32)
     key = b16decode(b"12C000EF88068E0777118C20DEEB2702F22A06042E3534DBCD9CE1EAC9175DE9")
-    plaintext = (
-        b"PT IN 413 DOE, JANE 37F DILAUDID 0.5MG 1HR AGO STILL C/O PAIN, INCREASE DOSE?"
-    )
-    authdata = b""
+    plaintext = b"PT IN 413 DOE, JANE 37F DILAUDID 0.5MG 1HR AGO STILL C/O PAIN, INCREASE DOSE?"
+    authdata = b"08.103.C"
 
     print(f"Key: {b16encode(key).decode()}")
     print(f"Msg: {plaintext.decode()}")
@@ -106,17 +86,6 @@ def main():
     if decrypted:
         print(f"Decrypted msg: {decrypted.decode()}")
     print()
-
-    print("Arduino input:")
-    print(f".key         = {b16arduino(b16encode(key).decode())},")
-    print(f".ciphertext  = {b16arduino(encrypted['ciphertext'])},")
-    print(f".authdata    = {b16arduino(encrypted['auth'])},")
-    print(f".iv          = {b16arduino(encrypted['iv'])},")
-    print(f".tag         = {b16arduino(encrypted['tag'])},")
-    print(f".datasize    = {int(len(encrypted['ciphertext']) / 2)},")
-    print(f".authsize    = {int(len(encrypted['auth']) / 2)},")
-    print(f".ivsize      = {int(len(encrypted['iv']) / 2)},")
-    print(f".tagsize     = {int(len(encrypted['tag']) / 2)}")
 
     return
 
