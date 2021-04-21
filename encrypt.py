@@ -66,7 +66,9 @@ def main():
     # Pager-specific pre-shared key
     # key = get_random_bytes(32)
     key = b16decode(b"12C000EF88068E0777118C20DEEB2702F22A06042E3534DBCD9CE1EAC9175DE9")
-    plaintext = b"PT IN 413 DOE, JANE 37F DILAUDID 0.5MG 1HR AGO STILL C/O PAIN, INCREASE DOSE?"
+    plaintext = (
+        b"PT IN 413 DOE, JANE 37F DILAUDID 0.5MG 1HR AGO STILL C/O PAIN, INCREASE DOSE?"
+    )
     authdata = b"08.103.C"
 
     print(f"Key: {b16encode(key).decode()}")
@@ -75,17 +77,17 @@ def main():
 
     print("Encrypting...")
     encrypted = encrypt(key, plaintext, authdata)
-    print(f"Encrypted msg: {encrypted['ciphertext']}")
-    print(f"Auth data: {encrypted['auth']}")
+    print(f"Msg: {encrypted['ciphertext']}")
+    print(f"AD: {encrypted['auth']}")
     print(f"IV: {encrypted['iv']}")
     print(f"Tag: {encrypted['tag']}")
     print()
 
-    print("Decrypting...")
-    decrypted = decrypt(key, *encrypted.values())
-    if decrypted:
-        print(f"Decrypted msg: {decrypted.decode()}")
-    print()
+    # print("Decrypting...")
+    # decrypted = decrypt(key, *encrypted.values())
+    # if decrypted:
+    #     print(f"Decrypted msg: {decrypted.decode()}")
+    # print()
 
     return
 
