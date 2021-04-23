@@ -1,7 +1,5 @@
 # pager-sec
 
-<a name="timeline" />
-
 ### Timeline
 
 :checkered_flag: This independent research project was **started** on Jan. 27, 2021, under the guidance of [Dr. Tyler Bletsch](http://people.duke.edu/~tkb13/) at Duke University.
@@ -11,24 +9,21 @@
 :white_check_mark: This project was **finished** on April 21, 2021.
 
 
-<a name="toc" />
 
 ### Table of Contents
 1. [Motivation](#motivation)
 2. [Materials](#materials)
-3. [Hacking Pagers](#methods1)
-    1. [Finding Frequencies](#methods1-frequencies)
-    2. [Interception](#methods1-intercept)
-    3. [Alternative: Generating Data](#methods1-generate)
-    4. [Processing](#methods1-process)
-4. [Fixing Pagers](#methods2)
+3. [Part 1: Hacking Pagers](#part-1-hacking-pagers)
+    1. [Finding Frequencies](#finding-frequencies)
+    2. [Interception](#interception)
+    3. [Alternative: Generating Data](#alternative-generating-data)
+    4. [Processing](#processing)
+4. [Part 2: Fixing Pagers](#part-2-fixing-pagers)
 5. [Conclusion](#conclusion)
 6. [Poster](#poster)
-7. [Additional Readings](#readings)
+7. [Additional Readings](#additional-readings)
 
 
-
-<a name="motivation" />
 
 ## Motivation
 
@@ -42,8 +37,6 @@ In this project, I illustrate this **dangerous yet neglected security flaw** by:
 2. Building a simple proof of concept for pager security.
 
 
-
-<a name="materials" />
 
 ## Materials
 
@@ -69,11 +62,7 @@ This project uses the following software stack:
 
 
 
-<a name="methods1" />
-
-## Hacking Pagers
-
-<a name="methods1-frequencies" />
+## Part 1: Hacking Pagers
 
 ### Finding Frequencies
 
@@ -89,8 +78,6 @@ I used the FLEX frequency **929.577 MHz**. Fortunately, the frequency had relati
 
 <p align="center"><img width="700" src="https://i.imgur.com/via8jLN.png"></p>
 
-
-<a name="methods1-intercept" />
 
 ### Interception
 
@@ -145,14 +132,10 @@ FLEX|3200/4|08.103.C|0004783821|LS|5|ALN|3.0.K|PT IN 413 DOE, JANE 37F DILAUDID 
 9. Message: Patient Jane Doe in Rm. 413, a 37-year-old female, was given 0.5 mg of Dilaudid (hydromorphone) 1 hour ago, yet she is still complaining of pain. Should we increase her dose?
 
 
-<a name="methods1-generate" />
-
 ### Alternative: Generating Data
 
 If you wish not to intercept real pages, you can also auto-generate artificial data. The script [**generate.py**](generate.py) follows the multimon-ng output format above to generate fake pages.
 
-
-<a name="methods1-process" />
 
 ### Processing
 
@@ -170,9 +153,8 @@ ncat -lu 7355 \
 <p align="center"><img width="650" src="https://i.imgur.com/otHM4YC.png"></p>
 
 
-<a name="methods2" />
 
-## Fixing Pagers
+## Part 2: Fixing Pagers
 
 Cryptographically, pagers are limited by the following:
 
@@ -196,8 +178,6 @@ I simulated the paging system with the Python script [**encrypt.py**](encrypt.py
 
 
 
-<a name="conclusion" />
-
 ## Conclusion
 
 Pagers used by hospitals are **easy to attack**. With cheap hardware and free software, anyone can intercept pages to access sensitive data.
@@ -206,15 +186,11 @@ Pagers are also **easy to defend**. Even limited hardware can support authentica
 
 
 
-<a name="poster" />
-
 ## Poster
 
 <p align="center"><img width="100%" src="https://i.imgur.com/d9J7HXy.png"></p>
 
 
-
-<a name="readings" />
 
 ## Additional Readings
 
