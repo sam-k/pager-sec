@@ -93,7 +93,7 @@ ncat -lu 7355 \
 | multimon-ng -t raw -a POCSAG512 -a POCSAG1200 -a POCSAG2400 -a FLEX -
 ```
 
-<p align="center"><img width="650" src="https://i.imgur.com/iEzyeCq.png"></p>
+<p align="center"><img width="700" src="https://i.imgur.com/iEzyeCq.png"></p>
 
 From what I’ve observed, the messages seem to fall into one of several formats:
 
@@ -150,7 +150,7 @@ ncat -lu 7355 \
 | ./collect.py
 ```
 
-<p align="center"><img width="650" src="https://i.imgur.com/otHM4YC.png"></p>
+<p align="center"><img width="700" src="https://i.imgur.com/otHM4YC.png"></p>
 
 
 
@@ -175,6 +175,8 @@ I also used [**ChaCha20–Poly1305**](https://blog.cloudflare.com/it-takes-two-t
 This proof of concept does not require any changes in hardware, since modifying or replacing pagers can be costly for hospitals. Instead, it is designed to be only a software upgrade.
 
 I simulated the paging system with the Python script [**encrypt.py**](encrypt.py), which encrypts a message with a hardcoded PSK. And I simulated the pager with the Arduino script [**Decrypt.ino**](Decrypt/Decrypt.ino).
+
+<p align="center"><img width="600" src="https://i.imgur.com/08TtVT2.png"></p>
 
 
 
