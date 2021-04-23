@@ -2,11 +2,24 @@
 
 :construction: Per guidance from Duke University’s [Office of Counsel](https://ogc.duke.edu/), the interception and decoding steps of this project were **suspended** on March 26, 2021.
 
-:white_check_mark: This project was finished on April 21, 2021.
+:white_check_mark: This project was **finished** on April 21, 2021.
 
-## Poster
+**Table of Contents**
+1. [Motivation](#motivation)
+2. [Materials](#materials)
+3. [Hacking Pagers](#methods1)
+  * [Finding Frequencies](#methods1-frequencies)
+  * [Interception](#methods1-interception)
+  * [Alternative: Generating Data](#methods1-generate)
+  * [Processing](#methods1-process)
+4. [Fixing Pagers](#methods2)
+5. [Conclusion](#conclusion)
+6. [Poster](#poster)
+7. [Additional Readings](#readings)
 
-<p align="center"><img width="100%" src="https://i.imgur.com/d9J7HXy.png"></p>
+
+
+<a name="motivation" />
 
 ## Motivation
 
@@ -19,6 +32,10 @@ In this project, I illustrate this dangerous yet neglected security flaw by:
 1. Demonstrating the ease of intercepting and decoding pages; then
 2. Building a simple proof of concept for pager security.
 
+
+
+<a name="materials" />
+
 ## Materials
 
 This project uses the following hardware:
@@ -27,6 +44,7 @@ This project uses the following hardware:
   - My SDR is based on the Realtek RTL2832U chipset and the Rafael Micro R820T tuner.
   - My SDR supports frequencies from 24 MHz to 1.766 GHz. You can check your SDR’s range based on its tuner on the [rtl-sdr wiki](https://osmocom.org/projects/rtl-sdr/wiki/Rtl-sdr).
 - [**Arduino Nano**](https://store.arduino.cc/usa/arduino-nano), to build the proof of concept. This and other Arduino models are available online.
+  - My Arduino uses the ATmega328P microcontroller.
 
 This project uses the following software stack:
 
@@ -40,7 +58,13 @@ This project uses the following software stack:
 - [**Crypto**](https://rweather.github.io/arduinolibs/crypto.html) 0.2.0, a cryptography library for Arduino.
 - I am running [macOS Big Sur 11.1](https://developer.apple.com/documentation/macos-release-notes/macos-big-sur-11_1-release-notes) on my machine. All Linux software were installed on macOS through [MacPorts](https://www.macports.org/).
 
-## Methods: Hacking Pagers
+
+
+<a name="methods1" />
+
+## Hacking Pagers
+
+<a name="methods1-frequencies" />
 
 ### Finding Frequencies
 
@@ -55,6 +79,9 @@ All frequencies were tested from Durham, N.C., United States. Only 929.577 MHz c
 I used the FLEX frequency 929.577 MHz. Fortunately, the frequency had relatively busy traffic, with roughly about 50 pages a minute.
 
 <p align="center"><img width="700" src="https://i.imgur.com/via8jLN.png"></p>
+
+
+<a name="methods1-intercept" />
 
 ### Interception
 
@@ -108,9 +135,15 @@ FLEX|3200/4|08.103.C|0004783821|LS|5|ALN|3.0.K|PT IN 413 DOE, JANE 37F DILAUDID 
    - Fragment flag (K if only 1 fragment, F if more to follow, C if last fragment): First and only fragment of message
 9. Message: Patient Jane Doe in Rm. 413, a 37-year-old female, was given 0.5 mg of Dilaudid (hydromorphone) 1 hour ago, yet she is still complaining of pain. Should we increase her dose?
 
+
+<a name="methods1-generate" />
+
 ### Alternative: Generating Data
 
 If you wish not to intercept real pages, you can also auto-generate artificial data. The script [**generate.py**](generate.py) follows the multimon-ng output format above to generate fake pages.
+
+
+<a name="methods1-process" />
 
 ### Processing
 
@@ -127,7 +160,10 @@ ncat -lu 7355 \
 
 <p align="center"><img width="650" src="https://i.imgur.com/otHM4YC.png"></p>
 
-## Methods: Fixing Pagers
+
+<a name="methods2" />
+
+## Fixing Pagers
 
 Cryptographically, pagers are limited by the following:
 
@@ -136,7 +172,7 @@ Cryptographically, pagers are limited by the following:
 - One-way communication, which make many common encryption protocols (e.g., [Diffie–Hellman](https://en.wikipedia.org/wiki/Diffie–Hellman_key_exchange)) impossible
   - This does mean one-way pagers cannot be used for location-tracking—as [pager advocates](https://www.washingtonpost.com/news/the-switch/wp/2014/08/11/why-one-of-cybersecuritys-thought-leaders-uses-a-pager-instead-of-a-smart-phone/) like to tout—but that is a trivially small benefit in exchange for total lack of data privacy.
 
-To show even limited hardware can support encryption, we modeled pagers with Arduino Nano, which has even less memory than pagers—the Arduio has only 32 KB of flash memory and 2 KB of SRAM, compared to the Motorola Advisor pager, which has 8×32 KB of SRAM.
+To show even limited hardware can support encryption, we modeled pagers with Arduino Nano, which is the smallest Arduino available and has even less memory than pagers. It has only 32 KB of flash memory and 2 KB of SRAM, compared to the Motorola Advisor pager, which has 8×32 KB of SRAM.
 
 I also used [ChaCha20–Poly1305](https://blog.cloudflare.com/it-takes-two-to-chacha-poly/), a lightweight symmetric-key protocol for authenticated encryption with additional data (AEAD). The stream cipher ChaCha, with 20 rounds of encryption, is as secure as the more popular [AES](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard) while offering better performance. The message authentication code (MAC) protocol Poly1305 allows verifying the integrity of a message—i.e., it detects when the contents of a message have been changed. The implementation details are as follows:
 
@@ -149,13 +185,29 @@ This proof of concept does not require any changes in hardware, since modifying 
 
 I simulated the paging system with the Python script [**encrypt.py**](encrypt.py), which encrypts a message with a hardcoded PSK. And I simulated the pager with the Arduino script [**Decrypt.ino**](Decrypt/Decrypt.ino).
 
+
+
+<a name="conclusion" />
+
 ## Conclusion
 
 Pagers used by hospitals are **easy to attack**. With cheap hardware and free software, anyone can intercept pages to access sensitive data.
 
 Pagers are also **easy to defend**. Even limited hardware can support authenticated encryption for one-way communication. After all the decades in which hospitals have been using pagers, there is little excuse for this huge lapse in security.
 
-## Readings
+
+
+<a name="poster" />
+
+## Poster
+
+<p align="center"><img width="100%" src="https://i.imgur.com/d9J7HXy.png"></p>
+
+
+
+<a name="readings" />
+
+## Additional Readings
 
 - Signal Identification Guide entries for [FLEX](https://www.sigidwiki.com/wiki/FLEX) and [POCSAG](https://www.sigidwiki.com/wiki/POCSAG), which can help you identify a frequency’s protocol by its sound and waterfall.
 - “[FLEX-TD Radio Paging System ARIB Standard](http://www.arib.or.jp/english/html/overview/doc/1-STD-43_A-E1.pdf),” by the Association of Radio Industries and Businesses (1996)
