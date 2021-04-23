@@ -113,22 +113,22 @@ FLEX|3200/4|08.103.C|0004783821|LS|5|ALN|3.0.K|PT IN 413 DOE, JANE 37F DILAUDID 
 
 1. Protocol name: FLEX
 2. Transmission mode
-    1. Speed (1600/3200/6400): 3200 bits per second
-    2. FSK level (2/4): 4-level
+    1. Speed (`1600`/`3200`/`6400`): 3,200 bits per second
+    2. FSK level (`2`/`4`): 4-level
 3. Frame information
-    1. Cycle number (0 to 14): 8
-    2. Frame number (0 to 127): 103
-    3. Phase (A for 1600 bps, A/C for 3200 bps, A/B/C/D for 6400 bps): C
-4. Capcode, left-padded with zeroes: 4783821
+    1. Cycle number (`0` to `14`): 8
+    2. Frame number (`0` to `127`): 103
+    3. Phase (`A` for 1,600 bps, `A`/`C` for 3,200 bps, `A`/`B`/`C`/`D` for 6,400 bps): C
+4. Capcode, left-padded with zeroes: 478-3821
 5. Address type
-    1. Long/short (L/S): Long
-    2. Group/single (G/S): Single
-6. Page enum (2 for tone, 3 for numeric, 5 for alphanumeric, 6 for binary): Alphanumeric
-7. Page type (TON for tone, NUM for numeric, ALN for alphanumeric, BIN for binary): Alphanumeric
+    1. Long/short (`L`/`S`): Long
+    2. Group/single (`G`/`S`): Single
+6. Page enum (`2` for tone, `3` for numeric, `5` for alphanumeric, `6` for binary): Alphanumeric
+7. Page type (`TON` for tone, `NUM` for numeric, `ALN` for alphanumeric, `BIN` for binary): Alphanumeric
 8. (Only for alphanumeric) Message fragment information
-    1. Fragment indicator (3 for first fragment, 0,1,2,4,… for next fragments): First fragment
-    2. Message continued flag (0 if end of message, 1 if more to follow): End of message
-    3. Fragment flag (K if only 1 fragment, F if more to follow, C if last fragment): First and only fragment of message
+    1. Fragment indicator (`3` for first fragment, `0`,`1`,`2`,`4`,… for next fragments): First fragment
+    2. Message continued flag (`0` if end of message, `1` if more to follow): End of message
+    3. Fragment flag (`K` if only 1 fragment, `F` if more to follow, `C` if last fragment): First and only fragment of message
 9. Message: Patient Jane Doe in Rm. 413, a 37-year-old female, was given 0.5 mg of Dilaudid (hydromorphone) 1 hour ago, yet she is still complaining of pain. Should we increase her dose?
 
 
