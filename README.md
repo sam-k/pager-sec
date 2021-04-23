@@ -1,8 +1,17 @@
 # pager-sec
 
+<a name="timeline" />
+
+### Timeline
+
+:checkered_flag: This independent research project was **started** on Jan. 27, 2021, under the guidance of [Dr. Tyler Bletsch](http://people.duke.edu/~tkb13/) at Duke University.
+
 :construction: Per guidance from Duke University’s [Office of Counsel](https://ogc.duke.edu/), the interception and decoding steps of this project were **suspended** on March 26, 2021.
 
 :white_check_mark: This project was **finished** on April 21, 2021.
+
+
+<a name="toc" />
 
 ### Table of Contents
 1. [Motivation](#motivation)
@@ -27,7 +36,7 @@ Though largely replaced by smartphones today, pagers remain extremely common in 
 
 However, most pagers lack even the most basic security. Most data is transmitted unencrypted despite carrying, in many cases, protected health information (PHI)—including patient names, medical histories and test results, all in real time. This poses significant risk to patient confidentiality, especially when the pages contain information about patient locations or stigmatized illnesses. It may even violate the [HIPAA Security Rule](https://www.law.cornell.edu/cfr/text/45/164.306). Still, it remains common practice in many hospitals.
 
-In this project, I illustrate this dangerous yet neglected security flaw by:
+In this project, I illustrate this **dangerous yet neglected security flaw** by:
 
 1. Demonstrating the ease of intercepting and decoding pages; then
 2. Building a simple proof of concept for pager security.
@@ -68,7 +77,7 @@ This project uses the following software stack:
 
 ### Finding Frequencies
 
-Most U.S. pagers use either [FLEX](https://www.sigidwiki.com/wiki/FLEX) or [POCSAG](https://www.sigidwiki.com/wiki/POCSAG) as their paging protocols. You can identify a pager frequency’s protocol by its characteristic sounds and waterfall shape, which can be found in its [Signal Identification Guide](https://www.sigidwiki.com/wiki/Signal_Identification_Guide) entry. The wiki entries also contain each protocol’s usual frequency ranges.
+Most U.S. pagers use either [**FLEX**](https://www.sigidwiki.com/wiki/FLEX) or [**POCSAG**](https://www.sigidwiki.com/wiki/POCSAG) as their paging protocols. You can identify a pager frequency’s protocol by its characteristic sounds and waterfall shape, which can be found in its [Signal Identification Guide](https://www.sigidwiki.com/wiki/Signal_Identification_Guide) entry. The wiki entries also contain each protocol’s usual frequency ranges.
 
 All frequencies were tested from Durham, N.C., United States. Only 929.577 MHz could be positively identified, as the interception and decoding of pages were suspended afterward. The other frequencies are only suspected to follow the FLEX protocol, based on their sound and waterfalls.
 
@@ -76,7 +85,7 @@ All frequencies were tested from Durham, N.C., United States. Only 929.577 MHz c
 - 929.577 MHz: Hospital services in North and South Carolina (FLEX)
 - 931.161 MHz: ??? (FLEX)
 
-I used the FLEX frequency 929.577 MHz. Fortunately, the frequency had relatively busy traffic, with roughly about 50 pages a minute.
+I used the FLEX frequency **929.577 MHz**. Fortunately, the frequency had relatively busy traffic, with roughly about 50 pages a minute.
 
 <p align="center"><img width="700" src="https://i.imgur.com/via8jLN.png"></p>
 
@@ -85,11 +94,11 @@ I used the FLEX frequency 929.577 MHz. Fortunately, the frequency had relatively
 
 ### Interception
 
-To intercept and decode pages, open Gqrx and tune it to the chosen frequency, adjusting the gain and squelch settings as needed. Then click "UDP" to stream the audio over UDP to a remote host.
+To intercept and decode pages, open **Gqrx** and tune it to the chosen frequency, adjusting the gain and squelch settings as needed. Then click "UDP" to stream the audio over UDP to a remote host.
 
 <p align="center"><img width="400" src="https://i.imgur.com/YSquBIJ.png"></p>
 
-Listen to the UDP data (port 7355), resample the raw audio from 48 kHz to 22.05 kHz, then try to decode it using several common paging protocols. This command is adapted from that in the [Gqrx docs](https://gqrx.dk/doc/streaming-audio-over-udp). Protocols can be added or removed using the `-a` flag in `multimon-ng`, and we can display the timestamp for each message with the `--timestamp` flag.
+Listen to the UDP data (port 7355), resample the raw audio from 48 kHz to 22.05 kHz, then try to decode it using several common paging protocols. This command is adapted from that in the [Gqrx docs](https://gqrx.dk/doc/streaming-audio-over-udp). Protocols can be added or removed using the `-a` flag in **multimon-ng**, and we can display the timestamp for each message with the `--timestamp` flag.
 
 ```
 ncat -lu 7355 \
@@ -174,7 +183,7 @@ Cryptographically, pagers are limited by the following:
 
 To show even limited hardware can support encryption, we modeled pagers with Arduino Nano, which is the smallest Arduino available and has even less memory than pagers. It has only 32 KB of flash memory and 2 KB of SRAM, compared to the Motorola Advisor pager, which has 8×32 KB of SRAM.
 
-I also used [ChaCha20–Poly1305](https://blog.cloudflare.com/it-takes-two-to-chacha-poly/), a lightweight symmetric-key protocol for authenticated encryption with additional data (AEAD). The stream cipher ChaCha, with 20 rounds of encryption, is as secure as the more popular [AES](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard) while offering better performance. The message authentication code (MAC) protocol Poly1305 allows verifying the integrity of a message—i.e., it detects when the contents of a message have been changed. The implementation details are as follows:
+I also used [**ChaCha20–Poly1305**](https://blog.cloudflare.com/it-takes-two-to-chacha-poly/), a lightweight symmetric-key protocol for authenticated encryption with additional data (AEAD). The stream cipher ChaCha, with 20 rounds of encryption, is as secure as the more popular [AES](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard) while offering better performance. The message authentication code (MAC) protocol Poly1305 allows verifying the integrity of a message—i.e., it detects when the contents of a message have been changed. The implementation details are as follows:
 
 - Each pager is assigned a unique, randomly generated pre-shared key (PSK), which is also known to the central paging system. In this way, if the PSK is somehow compromised, only communications to that one pager are compromised.
 - The frame information of a message is used as the “additional data” (AD), which is unencrypted and used for authentication only. By checking that the frame information, incremented with every message, is as expected, we can prevent [replay attacks](https://en.wikipedia.org/wiki/Replay_attack), where an attacker simply records and replays an encrypted message.
