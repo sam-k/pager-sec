@@ -83,7 +83,7 @@ I used the FLEX frequency **929.577 MHz**. Fortunately, the frequency had relati
 
 To intercept and decode pages, open **Gqrx** and tune it to the chosen frequency, adjusting the gain and squelch settings as needed. Then click "UDP" to stream the audio over UDP to a remote host.
 
-<p align="center"><img width="400" src="https://i.imgur.com/YSquBIJ.png"></p>
+<p align="center"><img width="400" src="https://i.imgur.com/C9sVgwN.png"></p>
 
 Listen to the UDP data (port 7355), resample the raw audio from 48 kHz to 22.05 kHz, then try to decode it using several common paging protocols. This command is adapted from that in the [Gqrx docs](https://gqrx.dk/doc/streaming-audio-over-udp). Protocols can be added or removed using the `-a` flag in **multimon-ng**, and we can display the timestamp for each message with the `--timestamp` flag.
 
