@@ -57,6 +57,7 @@ This project uses the following software stack:
     - [Dependencies](https://ports.macports.org/port/sox/summary): flac, lame, libiconv, libid3tag, libmad, libmagic, libogg, libopus, libpng, libsndfile, libvorbis, opusfile, twolame, wavpack, zlib (and their dependencies)
 - [**multimon-ng**](https://github.com/EliasOenal/multimon-ng) 1.1.8, a digital decoder on Linux.
     - It is one of the few decoders that support FLEX and POCSAG, two common paging protocols.
+- [**PyCryptodome**](https://pycryptodome.readthedocs.io/en/latest/) 3.9.9, a cryptography library for Python.
 - [**Crypto**](https://rweather.github.io/arduinolibs/crypto.html) 0.2.0, a cryptography library for Arduino.
 - I am running [macOS Big Sur 11.1](https://developer.apple.com/documentation/macos-release-notes/macos-big-sur-11_1-release-notes) on my machine. All Linux software were installed on macOS through [MacPorts](https://www.macports.org/).
 
