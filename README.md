@@ -85,7 +85,7 @@ To intercept and decode pages, open **Gqrx** and tune it to the chosen frequency
 
 <p align="center"><img width="400" src="https://i.imgur.com/C9sVgwN.png"></p>
 
-Listen to the UDP data (port 7355), resample the raw audio from 48 kHz to 22.05 kHz, then try to decode it using several common paging protocols. This command is adapted from that in the [Gqrx docs](https://gqrx.dk/doc/streaming-audio-over-udp). Protocols can be added or removed using the `-a` flag in **multimon-ng**, and we can display the timestamp for each message with the `--timestamp` flag.
+Listen to the UDP data (port 7355), resample the raw audio from 48 kHz to 22.05 kHz, then try to decode it using several common paging protocols. This command is adapted from that in the [Gqrx docs](https://gqrx.dk/doc/streaming-audio-over-udp). Protocols can be added or removed using the `-a` flag in **multimon-ng**, and you can display the timestamp for each message with the `--timestamp` flag.
 
 ```
 ncat -lu 7355 \
@@ -139,7 +139,7 @@ If you wish not to intercept real pages, you can also auto-generate artificial d
 
 ### Processing
 
-Longer messages are often fragmented and transmitted over several pages. This is not an issue for practical use—each pager receives only those pages intended for it—but, because we see all pages on a frequency, these fragments can arrive interrupted by other messages. We can reassemble these fragments by concatenating all the pages meant for a capcode and received in a certain timeframe.
+Longer messages are often fragmented and transmitted over several pages. This is not an issue for practical use—each pager receives only those pages intended for it—but, because I see all pages on a frequency, these fragments can arrive interrupted by other messages. I can reassemble these fragments by concatenating all the pages meant for a capcode and received in a certain timeframe.
 
 Redirect the output to [**collect.py**](collect.py) to reassemble the message fragments in real time.
 
@@ -163,12 +163,12 @@ Cryptographically, pagers are limited by the following:
 - One-way communication, which make many common encryption protocols (e.g., [Diffie–Hellman](https://en.wikipedia.org/wiki/Diffie–Hellman_key_exchange)) impossible
     - This does mean one-way pagers cannot be used for location-tracking—as [pager advocates](https://www.washingtonpost.com/news/the-switch/wp/2014/08/11/why-one-of-cybersecuritys-thought-leaders-uses-a-pager-instead-of-a-smart-phone/) like to tout—but that is a trivially small benefit in exchange for total lack of data privacy.
 
-To show even limited hardware can support encryption, we modeled pagers with Arduino Nano, which is the smallest Arduino available and has even less memory than pagers. It has only 32 KB of flash memory and 2 KB of SRAM, compared to the Motorola Advisor pager, which has 8×32 KB of SRAM.
+To show even limited hardware can support encryption, I modeled pagers with an **Arduino Nano**, which is the smallest Arduino available and has even less memory than pagers. It has only 32 KB of flash memory and 2 KB of SRAM, compared to the Motorola Advisor pager, which has 8×32 KB of SRAM.
 
 I also used [**ChaCha20–Poly1305**](https://blog.cloudflare.com/it-takes-two-to-chacha-poly/), a lightweight symmetric-key protocol for authenticated encryption with additional data (AEAD). The stream cipher ChaCha, with 20 rounds of encryption, is as secure as the more popular [AES](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard) while offering better performance. The message authentication code (MAC) protocol Poly1305 allows verifying the integrity of a message—i.e., it detects when the contents of a message have been changed. The implementation details are as follows:
 
 - Each pager is assigned a unique, randomly generated pre-shared key (PSK), which is also known to the central paging system. In this way, if the PSK is somehow compromised, only communications to that one pager are compromised.
-- The frame information of a message is used as the “additional data” (AD), which is unencrypted and used for authentication only. By checking that the frame information, incremented with every message, is as expected, we can prevent [replay attacks](https://en.wikipedia.org/wiki/Replay_attack), where an attacker simply records and replays an encrypted message.
+- The frame information of a message is used as the “additional data” (AD), which is unencrypted and used for authentication only. By checking that the frame information, incremented with every message, is as expected, I can prevent [replay attacks](https://en.wikipedia.org/wiki/Replay_attack), where an attacker simply records and replays an encrypted message.
 - This implementation uses 256-bit keys, 96-bit initialization vectors (IVs) and 128-bit authentication tags.
 - Due to memory constraints, this implementation is limited to 300-byte messages and 32-byte ADs.
 
