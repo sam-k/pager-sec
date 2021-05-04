@@ -8,7 +8,7 @@
 
 :white_check_mark: This project was **finished** on April 21, 2021.
 
-:trophy: This project was awarded **2nd place** in the 2021 Duke Electrical & Computer Engineering Independent Study Poster Session.
+:trophy: This project was awarded **2nd place** on April 26, 2021, in the 2021 Duke Electrical & Computer Engineering Independent Study Poster Session.
 
 
 ### Table of Contents
