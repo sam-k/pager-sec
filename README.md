@@ -8,6 +8,7 @@
 
 :white_check_mark: This project was **finished** on April 21, 2021.
 
+:trophy: This project was awarded **2nd place** in the 2021 Duke Electrical & Computer Engineering Independent Study Poster Session.
 
 
 ### Table of Contents
@@ -140,7 +141,7 @@ If you wish not to intercept real pages, you can also auto-generate artificial d
 
 ### Processing
 
-Longer messages are often fragmented and transmitted over several pages. This is not an issue for practical use—each pager receives only those pages intended for it—but, because I see all pages on a frequency, these fragments can arrive interrupted by other messages. I can reassemble these fragments by concatenating all the pages meant for a capcode and received in a certain timeframe.
+Longer messages are often fragmented and transmitted over several pages. This is not an issue for practical use—each pager receives only those pages intended for it—but, because I see all pages on a frequency, these fragments can arrive interrupted by other messages. I can reassemble these fragments by concatenating the pages according to their frame information and message fragment information.
 
 Redirect the output to [**collect.py**](collect.py) to reassemble the message fragments in real time.
 
