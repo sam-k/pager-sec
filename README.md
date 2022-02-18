@@ -160,9 +160,9 @@ ncat -lu 7355 \
 
 Cryptographically, pagers are limited by the following:
 
-- Small memory, which may make computationally or resource-intensive protocols (e.g., [RSA](https://en.wikipedia.org/wiki/RSA_(cryptosystem))) infeasible
-    - RSA implementations for the Arduino do exist, but they are far too weak for practical use—one [proof of concept](https://www.sciencedirect.com/science/article/pii/S1877050914009466) uses 8-bit keys, while the NIST recommends at least 2,048-bit keys.
-- One-way communication, which make many common encryption protocols (e.g., [Diffie–Hellman](https://en.wikipedia.org/wiki/Diffie–Hellman_key_exchange)) impossible
+- Small memory, which may make computationally or resource-intensive protocols (e.g., [RSA](https://en.wikipedia.org/wiki/RSA_(cryptosystem))) infeasible.
+    - RSA implementations for the Arduino do exist, but they are far too weak for practical use—one [proof of concept](https://www.sciencedirect.com/science/article/pii/S1877050914009466) uses 8-bit keys, while the National Institute of Standards and Technology recommends at least 2,048-bit keys.
+- One-way communication, which make many common encryption protocols (e.g., [Diffie–Hellman](https://en.wikipedia.org/wiki/Diffie–Hellman_key_exchange)) impossible.
     - This does mean one-way pagers cannot be used for location-tracking—as [pager advocates](https://www.washingtonpost.com/news/the-switch/wp/2014/08/11/why-one-of-cybersecuritys-thought-leaders-uses-a-pager-instead-of-a-smart-phone/) like to tout—but that is a trivially small benefit in exchange for total lack of data privacy.
 
 To show even limited hardware can support encryption, I modeled pagers with an **Arduino Nano**, which is the smallest Arduino available and has even less memory than pagers. It has only 32 KB of flash memory and 2 KB of SRAM, compared to the Motorola Advisor pager, which has 8×32 KB of SRAM.
