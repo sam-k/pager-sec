@@ -2,29 +2,33 @@
 
 ### Timeline
 
-:checkered_flag: This independent research project was **started** on Jan. 27, 2021, under the guidance of [Dr. Tyler Bletsch](http://people.duke.edu/~tkb13/) at Duke University.
+:checkered_flag: This independent research project was started on Jan. 27, 2021, under the guidance of [Dr. Tyler Bletsch](http://people.duke.edu/~tkb13/) at Duke University.
 
-:construction: Per guidance from Duke University’s [Office of Counsel](https://ogc.duke.edu/), the interception and decoding steps of this project were **suspended** on March 26, 2021.
+:construction: Per guidance from Duke University’s [Office of Counsel](https://ogc.duke.edu/), the interception and decoding steps of this project were suspended on March 26, 2021.
 
-:white_check_mark: This project was **finished** on April 21, 2021.
+:white_check_mark: This project was finished on April 21, 2021.
 
 :trophy: This project was awarded **2nd place** on April 26, 2021, in the 2021 Duke Electrical & Computer Engineering Independent Study Poster Session.
 
-
 ### Table of Contents
-1. [Motivation](#motivation)
-2. [Materials](#materials)
-3. [Part 1: Hacking Pagers](#part-1-hacking-pagers)
+
+1. [Poster](#poster)
+2. [Motivation](#motivation)
+3. [Materials](#materials)
+4. [Part 1: Hacking Pagers](#part-1-hacking-pagers)
     1. [Finding Frequencies](#finding-frequencies)
     2. [Interception](#interception)
     3. [Alternative: Generating Data](#alternative-generating-data)
     4. [Processing](#processing)
-4. [Part 2: Fixing Pagers](#part-2-fixing-pagers)
-5. [Conclusion](#conclusion)
-6. [Poster](#poster)
+5. [Part 2: Fixing Pagers](#part-2-fixing-pagers)
+6. [Conclusion](#conclusion)
 7. [Additional Readings](#additional-readings)
 
+## Poster
 
+<p align="center">
+    <img width="100%" alt="Poster presentation for: Security vulnerabilities and security solutions for medical pagers" src="https://github.com/user-attachments/assets/49d6c112-9c9f-434e-88e8-3726faa2dfb6" />
+</p>
 
 ## Motivation
 
@@ -36,8 +40,6 @@ In this project, I illustrate this **dangerous yet neglected security flaw** by:
 
 1. Demonstrating the ease of intercepting and decoding pages; then
 2. Building a simple proof of concept for pager security.
-
-
 
 ## Materials
 
@@ -62,8 +64,6 @@ This project uses the following software stack:
 - [**Crypto**](https://rweather.github.io/arduinolibs/crypto.html) 0.2.0, a cryptography library for Arduino.
 - I am running [macOS Big Sur 11.1](https://developer.apple.com/documentation/macos-release-notes/macos-big-sur-11_1-release-notes) on my machine. All Linux software were installed on macOS through [MacPorts](https://www.macports.org/).
 
-
-
 ## Part 1: Hacking Pagers
 
 ### Finding Frequencies
@@ -78,24 +78,30 @@ All frequencies were tested from Durham, N.C., United States. Only 929.577 MHz c
 
 I used the FLEX frequency **929.577 MHz**. Fortunately, the frequency had relatively busy traffic, with roughly about 50 pages a minute.
 
-<p align="center"><img width="700" src="https://i.imgur.com/via8jLN.png"></p>
+<p align="center">
+    <img width="700" alt="Waterfall spectrogram for radio frequency 929.577 MHz" src="https://github.com/user-attachments/assets/f732ad29-19ce-4a12-853d-697174f3e19c" />
+</p>
 
 
 ### Interception
 
 To intercept and decode pages, open **Gqrx** and tune it to the chosen frequency, adjusting the gain and squelch settings as needed. Then click "UDP" to stream the audio over UDP to a remote host.
 
-<p align="center"><img width="400" src="https://i.imgur.com/C9sVgwN.png"></p>
+<p align="center">
+    <img width="400" alt="Screenshot of Gqrx tuned at 929.577 MHz" src="https://github.com/user-attachments/assets/49ea92e0-063f-4cf1-a72b-da7d2288d9ca" />
+</p>
 
 Listen to the UDP data (port 7355), resample the raw audio from 48 kHz to 22.05 kHz, then try to decode it using several common paging protocols. This command is adapted from that in the [Gqrx docs](https://gqrx.dk/doc/streaming-audio-over-udp). Protocols can be added or removed using the `-a` flag in **multimon-ng**, and you can display the timestamp for each message with the `--timestamp` flag.
 
-```
+```bash
 ncat -lu 7355 \
 | sox -t raw -esigned-integer -b16 -r 48000 - -esigned-integer -b16 -r 22050 -t raw - \
 | multimon-ng -t raw -a POCSAG512 -a POCSAG1200 -a POCSAG2400 -a FLEX -
 ```
 
-<p align="center"><img width="700" src="https://i.imgur.com/iEzyeCq.png"></p>
+<p align="center">
+    <img width="700" alt="Screenshot of terminal output showing decoded pager messages" src="https://github.com/user-attachments/assets/a1f06473-0777-43e0-825d-a78be313fcd5" />
+</p>
 
 From what I’ve observed, the messages seem to fall into one of several formats:
 
@@ -109,7 +115,7 @@ From what I’ve observed, the messages seem to fall into one of several formats
 
 For each decoded FLEX message, multimon-ng prints a lot of associated metadata. I deciphered its syntax using the [ARIB Standard](http://www.arib.or.jp/english/html/overview/doc/1-STD-43_A-E1.pdf) for FLEX and the relevant [source code](https://github.com/EliasOenal/multimon-ng/blob/master/demod_flex.c). Here is a typical (but not real) message that you might see:
 
-```
+```text
 FLEX|3200/4|08.103.C|0004783821|LS|5|ALN|3.0.K|PT IN 413 DOE, JANE 37F DILAUDID 0.5MG 1HR AGO STILL C/O PAIN, INCREASE DOSE?
 ```
 
@@ -145,16 +151,16 @@ Longer messages are often fragmented and transmitted over several pages. This is
 
 Redirect the output to [**collect.py**](collect.py) to reassemble the message fragments in real time.
 
-```
+```bash
 ncat -lu 7355 \
 | sox -t raw -esigned-integer -b16 -r 48000 - -esigned-integer -b16 -r 22050 -t raw - \
 | multimon-ng -t raw -a POCSAG512 -a POCSAG1200 -a POCSAG2400 -a FLEX - \
 | ./collect.py
 ```
 
-<p align="center"><img width="700" src="https://i.imgur.com/otHM4YC.png"></p>
-
-
+<p align="center">
+    <img width="700" alt="Screenshot of terminal output showing decoded and collected pager messages" src="https://github.com/user-attachments/assets/a2198200-8c66-462a-8850-6a2e6a95f25c" />
+</p>
 
 ## Part 2: Fixing Pagers
 
@@ -178,23 +184,15 @@ This proof of concept does not require any changes in hardware, since modifying 
 
 I simulated the paging system with the Python script [**encrypt.py**](encrypt.py), which encrypts a message with a hardcoded PSK. And I simulated the pager with the Arduino script [**Decrypt.ino**](Decrypt/Decrypt.ino).
 
-<p align="center"><img width="600" src="https://i.imgur.com/08TtVT2.png"></p>
-
-
+<p align="center">
+    <img width="600" alt="Screenshot of Arduino terminal output showing proof-of-concept decryption of an encryped pager message" src="https://github.com/user-attachments/assets/088a1de9-b384-4a51-b972-d4d204b84115" />
+</p>
 
 ## Conclusion
 
 Pagers used by hospitals are **easy to attack**. With cheap hardware and free software, anyone can intercept pages to access sensitive data.
 
 Pagers are also **easy to defend**. Even limited hardware can support authenticated encryption for one-way communication. After all the decades in which hospitals have been using pagers, there is little excuse for this huge lapse in security.
-
-
-
-## Poster
-
-<p align="center"><img width="100%" src="https://i.imgur.com/d9J7HXy.png"></p>
-
-
 
 ## Additional Readings
 
